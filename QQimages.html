@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QQ相册效果</title>
+    <script type="text/javascript" src="./js/animateManage.js"></script>
+    <style>
+        .qqPhoto{
+            position : relative;
+            top : 0px;
+            width : 100%;
+            height : 783px;
+            background-color : #232429;
+        }
+        .qqPhoto .photoTitle{
+            position : relative;
+            text-align : center;
+            font-size : 35px;
+            font-weight : normal;
+            top : 100px;
+            +top : 90px;/*IE7*/
+            color : #fff;
+        }
+        .qqPhoto .photoName{
+            position : relative;
+            text-align : center;
+            font-weight : normal;
+            top : 41px;
+        }
+        .qqPhoto .photoName h5{
+            font-weight : normal;
+            width : 200px;
+            line-height : 34px;
+            height : 34px;
+            color : #fff;
+            display : inline-block;
+            font-size : 19px;
+            background-color : rgba(0,0,0,3);
+            filter : none;
+            border : 1px solid rgba(119,119,119,7);
+        }
+        .photoStreamMain{
+            border-left-width : 0;
+            border-right-width : 0;
+            padding : 1px 0;
+            border-radius : 0;
+            border : 1px solid rgba(119,119,119,7);
+            border-radius : 3px;
+            width : 100%;
+            height : 300px;
+            overflow : hidden;
+            padding: 1px;
+            filter : progid : DXImageTransform.Microsoft.gradient(startColorstr = "#B2777777",endColorstr = "#B2777777");
+            position : relative;
+            top : 100px;
+        }
+        #photoStreamMain{
+            position : relative;
+        }
+        #photoStreamMain div{
+            float : left;
+            position : relative;
+            height : 300px;
+            overflow : hidden;
+        }
+        #photoStreamMain div img{
+            height : 280px;
+            margin-top : 10px;
+            position : relative;
+        }
+        .rollLine{
+            position : relative;
+            top : 135px;
+            left : 50%;
+            margin-left : -152;
+            width : 334px;
+            background-position : 0 -36px;
+            font-size : 0;
+            height : 6px;
+            _background-image : none;
+            _background-color : transparent;
+            _height : 6px;
+            border : 1px solid #535353;
+            border-radius : 4px;
+        }
+        .rollLine .line{
+            width : 100px;
+            left : 0px;
+            height : 6px;
+            background : #fff;
+            background : rgba(255,255,255,8);
+            border-radius : 4px;
+            position : relative;
+            top : 0;
+            font-size : 0;
+        }
+        body{
+            margin : 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="qqPhoto">
+        <div class="photoTitle">
+            <h2>qq相册效果</h2>
+        </div>
+        <div class="photoName">
+            <h5>相册名称</h5>
+        </div>
+        <div class="photoStreamMain">
+            <div id="photoStreamMain">
+                <div>
+                    <img src="./images/11.png"/>
+                </div>
+                <div>
+                    <img src="./images/22.png"/>
+                </div>
+                <div>
+                    <img src="./images/33.png"/>
+                </div>
+                <div>
+                    <img src="./images/44.png"/>
+                </div>
+                <div>
+                    <img src="./images/55.png"/>
+                </div>
+            </div>
+        </div>
+        <div class="rollLine" style="margin-left:-150px;">
+            <div id="scrollLine" class="line"></div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        var mousepos = {
+            "top" : 0,
+            "left" : 0
+        }
+        var getMousePoint = function(_e){
+            var body = document.body;
+            var left = 0;
+            var top = 0;
+            if(typeof window.pageYOffset != "undefined"){
+                left = window.pageXOffset;
+                top = window.pageYOffset;
+            }else if(typeof document.compatMode != 'undefined' && document.compatMode != 'BackCompat'){
+                left = document.documentElement.scrollLeft;
+                top = document.documentElement.scrollTop;
+            }else if(typeof body != 'undefined'){
+                left = body.scrollLeft;
+                top = body.scrollTop;
+            }
+            left += _e.clientX;
+            top += _e.clientY;
+            mousepos.left = left;
+            mousepos.top = top;
+            return mousepos;
+        }
+        var getTypeElement = function(es,type){
+            var eArr = [];
+            for(var i = 0; i < es.length; i ++){
+                if(es[i].nodeName.replace("#","").toLocaleLowerCase() === type){
+                    eArr.push(es[i]);
+                }
+            }
+            return eArr;
+        }
+        var getAbsoluteLeft = function(_e){
+            var left = _e.offsetLeft;
+            var current = _e.offsetParent;
+            while(current !== null){
+                left += current.offsetLeft;
+                current = current.offsetParent;
+            }
+            return left;
+        }
+        var qqPhoto = function(options){
+            var scrollLine = options.scrollLine;
+            var minLeft = getAbsoluteLeft(scrollLine);
+            var maxLeft = options.width - 100;
+            var childDivs = getTypeElement(options.photoStreamMain.childNodes,"div");
+            var ve = [];
+            var cw = 0;
+            var initChilds = (function(){
+                var i = 0;
+                while(childDivs[i]){
+                    var img = getTypeElement(childDivs[i].childNodes,"img")[0];
+                    if(i % 2 == 0){
+                        ve.push(img);
+                        cw +=150;
+                        childDivs[i].style.width = "150px";
+                    }else{
+                        cw += 300;
+                        childDivs[i].style.width = "300px";
+                    }
+                    i ++;
+                }
+            })();
+            var s = cw / options.width;
+            scrollLine.onmousedown = function(e){
+                bodyscrollLineingE.scrollLineing = true;
+                e = e || window.event;
+                var pos = getMousePoint(e);
+                bodyscrollLineingE.vx = pos.left - minLeft - (parseInt(this.style.left) || 0);
+            }
+            document.body.onmouseup = function(){
+                bodyscrollLineingE.scrollLineing = false;
+            }
+            options.photoStreamMain.style.width = cw;
+            var mainScrollLine = function(ml){
+                var _ml = -1 * ml * s;
+                options.photoStreamMain.style.left = _ml + "px";
+            }
+            bodyscrollLineingE = {
+                minLeft : minLeft,
+                maxLeft : maxLeft,
+                scrollLine : scrollLine,
+                mainScrollLine : mainScrollLine
+            }
+            setInterval(function(){
+                for(var i = 0; i < ve.length; i ++){
+                    new animateManage({
+                        "context" : ve[i],
+                        "effect" : "linear",
+                        "time" : 5000,
+                        "starCss" : {
+                            "left" : ve[i].style.left || 0
+                        },
+                        "css" : {
+                            "left" : (parseInt(ve[i].style.left,10) == -150 ? 0 : -150)
+                        }
+                    }).init();
+                }
+            },6000)
+        }
+        var bodyscrollLineingE = {
+            scrollLineing : false,
+            minLeft : 0,
+            maxLeft : 0,
+            scrollLine : null,
+            vx : 0,
+            mainScrollLine : 0
+        }
+        var bodyscrollLineing = function(e){
+            var ee = bodyscrollLineingE;
+            if(ee.scrollLineing){
+                e = e || window.event;
+                var pos = getMousePoint(e);
+                var l = pos.left - ee.minLeft - ee.vx;
+                if(l < 0) l = 0;
+                if(l > ee.maxLeft) l = ee.maxLeft;
+                ee.scrollLine.style.left = (l || 0) + "px";
+                ee.mainScrollLine(l);
+            }
+        }
+        document.body.onmousemove = function(e){
+            bodyscrollLineing(e);
+        }
+        qqPhoto({
+            "scrollLine" : document.getElementById("scrollLine"),
+            "photoStreamMain" : document.getElementById("photoStreamMain"),
+            "width" : 334
+        })
+    }
+</script>

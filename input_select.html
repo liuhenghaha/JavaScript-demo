@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>可输入的下拉框</title>
+</head>
+<body>
+    <select id="select" style="position: absolute;width: 118px;left: 12px;">
+        <option value="111">111</option>
+        <option value="222">222</option>
+    </select>
+    <input type="text" id="input" style="position: absolute;left: 11px;width: 100px;border-right: 0px;">
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        var select = document.getElementById("select");
+        var input = document.getElementById("input");
+        var addOption = function(target,options){
+            for(var i = 0; i < options.length; i ++){
+                var option = document.createElement("option");
+                option.value = options[i].value;
+                option.text = options[i].text;
+                target.options.add(option);
+            }
+        }
+        input.onkeyup = function(){
+            var key = event.keyCode;
+            if(key == 13){
+                addOption(select,[{'value':input.value,'text':input.value}]);
+            }
+        }
+        select.onchange = function(){
+            input.value = this.value;
+        }
+    }
+</script>

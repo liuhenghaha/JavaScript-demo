@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tab选项卡</title>
+    <style>
+        .tabSwitchParent{
+            position : relative;
+            height : 100px;
+            width : 200px;
+        }
+        .tabSwitchParent div{
+            position : relative;
+            float : left;
+        }
+        .tabSwitchTarget{
+            display : none;
+            left : 0;
+            top : 0px;
+            z-index : 1;
+            width : 324px;
+            height : 54px;
+            padding : 5px;
+            border : solid 1px #ccc;
+            color : #666;
+        }
+        #tabSwitch{
+            position : relative;
+            float : left;
+            z-index : 2;
+            top : 1px;
+        }
+        #tabSwitch{
+            font-size : 15px;
+            margin : 0px;
+            text-align : center;
+            cursor : pointer;
+        }
+        #tabSwitch .on{
+            boeder : 1px solid #ccc;
+            border-bottom : none;
+            background-color : #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="tabSwitchParent">
+        <div id="tabSwitch">
+            <div data-target="tabSwitch1" class="on">选项卡1</div>
+            <div data-target="tabSwitch2">选项卡2</div>
+            <div data-target="tabSwitch3">选项卡3</div>
+        </div>
+        <div class="tabSwitchTarget" style="display:block;color:#123323" id="tabSwitch1">选项卡1</div>
+        <div class="tabSwitchTarget" style="color:#abcdee" id="tabSwitch2">选项卡2</div>
+        <div class="tabSwitchTarget" style="color:#444321" id="tabSwitch3">选项卡3</div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        function getTypeElement(es,type){
+            var eArr = [];
+            for(var i = 0;i< es.length;i ++){
+                if(es[i].nodeName.replace("#","").toLocaleLowerCase() == type){
+                    eArr.push(es[i]);
+                }
+            }
+            return eArr;
+        }
+        function tabSwitch(e){
+            var divs = getTypeElement(e.childNodes,"div");
+            for(var i = 0;i < divs.length;i ++){
+                divs[i].onclick = function(){
+                    for(var j = 0;j < divs.length;j ++){
+                        divs[j].className = "";
+                        document.getElementById("tabSwitch" + (j + 1)).style.display = "none";
+                    }
+                    this.className = "on";
+                    document.getElementById(this.getAttribute("data-target")).style.display = "block";
+                }
+            }
+        }
+        tabSwitch(document.getElementById("tabSwitch"));
+    }
+</script>

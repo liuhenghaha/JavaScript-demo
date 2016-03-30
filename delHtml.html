@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>删除HTML</title>
+</head>
+<body>
+    <input type="text" id="del" value="删除HTML">
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        var del = document.getElementById("del");
+        del.onblur = function(){
+            this.value = this.value.replace(/<[\/\!]*[^<>]*/ig,"");
+        }
+    }
+</script>

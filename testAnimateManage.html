@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>验证animateManage</title>
+    <script type="text/javascript" src="./js/animateManage.js"></script>
+</head>
+<body>
+    <img id="img" class="minImages" src="./images/11.png">
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        document.getElementById("img").onclick = function(){
+            new animateManage({
+                "context" : this,
+                "effect" : "linear",
+                "time" : 500,
+                "starCss" : {
+                    "left" : this.left
+                },
+                "css" : {
+                    "left" : 200
+                },
+                "callback" : function(){
+                    alert("动画结束的回调函数执行");
+                }
+            }).init();
+        }
+    };
+</script>

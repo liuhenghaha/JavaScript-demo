@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图片轮播</title>
+    <script type="text/javascript" src="./js/animateManage.js"></script>
+    <style>
+        #cascadingShuffling{
+            position : absolute;
+            z-index : 1;
+            top : 100px;
+            left : -180px;
+        }
+        #cascadingShuffling li{
+            z-index : 0;
+            position : absolute;
+            top : 20px;
+            left : 377px;
+            height : auto;
+            width : 300px;
+            cursor : pointer;
+            list-style-type : none;
+            border-radius : 4px;
+            box-shadow : 1px 1px 12px rgba(200,200,200,1);
+            margin : 0;
+        }
+        #cascadingShuffling li img{
+            width : 300px;
+            height : 333px;
+        }
+        #cascadingBtn{
+            position : absolute;
+            top : 508px;
+            left : 210px;
+        }
+        .shufflingcss{
+            position :absolute;
+            top : 0px;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="shufflingcss">图片轮播---必须>=3张</h2>
+    <ul id="cascadingShuffling">
+        <li>
+            <img src="./images/11.png"/>
+        </li>
+        <li>
+            <img src="./images/22.png"/>
+        </li>
+        <li>
+            <img src="./images/33.png"/>
+        </li>
+        <li>
+            <img src="./images/44.png"/>
+        </li>
+        <li>
+            <img src="./images/55.png"/>
+        </li>
+    </ul>
+    <div id="cascadingBtn">
+        <input type="button" id="cascadingBtnLeft" value="<<">
+        <input type="button" id="cascadingBtnRight" value=">>">
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        getTypeElement = function(es,type){
+            var eArr = [];
+            for( var i = 0 ;i < es.length; i ++){
+                var esl = es[i];
+                if(esl.nodeName.replace("#","").toLocaleLowerCase() == type){
+                    eArr.push(esl);
+                }
+            }
+            return eArr;
+        }
+        var leftPics = [];
+        var rightPics = [];
+        function cascadingShuffling(options){
+            var child = this.getTypeElement(options.e.childNodes,"li");
+            var _child = [];
+            var baseLeft = 220;
+            var childlen = child.length;
+            var center = Math.floor((childlen - 1) / 2);
+            var vt = 50;
+            var cvt = center * vt;
+            var centerPic = null;
+            for(var i = 0; i < childlen; i ++){
+                var childl = child[i];
+                if(i === 0){
+                    centerPic = child[i];
+                    _child[i] = {
+                        "style" : {
+                            "left" : baseLeft + center * vt,
+                            "top" : (childl.offsetTop - vt ),
+                            "zIndex" : childlen
+                        }
+                    }
+                }else if(i <= center){
+                    leftPics.push(child[i]);
+                    _child[i] = {
+                        "style" : {
+                            "left" : baseLeft + cvt - vt * i,
+                            "top" : (childl.offsetTop - vt * (childlen - i) / childlen),
+                            "zIndex" : center - i
+                        }
+                    }
+                }else{
+                    rightPics.push(child[i]);
+                    _child[i] = {
+                        "style" : {
+                            "left" : baseLeft + cvt + vt * (i - center),
+                            "top" : (childl.offsetTop - vt * (childlen - i) / childlen),
+                            "zIndex" : childlen - (i - center)
+                        }
+                    }
+                }
+            }
+            var updateUI = function(target,_target,callback){
+                new animateManage({
+                    "context" : target,
+                    "effect" : "linear",
+                    "time" : 200,
+                    "starCss" : {
+                        "left" : target.style.left || target.offsetLeft,
+                        "top" : target.style.top || target.offsetTop,
+                        "zIndex" : target.style.zIndex
+                    },
+                    "css" : {
+                        "left" : _target.style.left || _target.offsetLeft,
+                        "top" : _target.style.top || _target.offsetTop,
+                        "zIndex" : _target.style.zIndex
+                    },
+                    "callback" : function(){
+                        callback && callback();
+                    }
+                }).init();
+            }
+            var rotate = function(o1,o2,type){
+                var _type = type || "|";
+                o1.unshift(centerPic);
+                var _center = _type == "r" && (center) || 0;
+                for(var i = 0; i < o1.length - 1; i ++){
+                    if(i == 0 ){
+                        updateUI(o1[i],_child[1 + _center]);
+                    }else{
+                        updateUI(o1[i],_child[i + 1 + _center]);
+                    }
+                }
+                o2.push(o1.pop());
+                for(var i = o2.length - 1; i >= 0 ;i --){
+                    if(i == 0){
+                        updateUI(o2[i],_child[0]);
+                    }else{
+                        updateUI(o2[i],_child[center + i - _center]);
+                    }
+                }
+                centerPic = o2.shift();
+            }
+            var rotateID = -1;
+            var closeRotate = function(){
+                clearInterval(rotateID);
+            }
+            var openRotate = function(){
+                rotateID = setInterval(function(){
+                    rotate(leftPics,rightPics);
+                },2000);
+            }
+            rotate(leftPics,rightPics);
+            openRotate();
+            options.left.onclick = function(){
+                rotate(leftPics,rightPics);
+            }
+            options.left.onmousemove = function(){
+                closeRotate();
+            }
+            options.left.ommouseout = function(){
+                openRotate();
+            }
+            options.right.onclick = function(){
+                rotate(rightPics,leftPics,"r");
+            }
+            options.right.onmousemove = function(){
+                closeRotate();
+            }
+            options.right.ommouseout = function(){
+                openRotate();
+            }
+        }
+        cascadingShuffling({
+            "e" : document.getElementById("cascadingShuffling"),
+            "left" : document.getElementById("cascadingBthLeft"),
+            "right" : document.getElementById("cascadingBtnRight")
+        });
+    }
+</script>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>css3变换过渡</title>
+    <style>
+        .gallery{
+            margin : 0px 30px 0px 30px;
+            background : #D8EEFE;
+            padding : 10px;
+        }
+        .gallery img{
+            margin : 5px;
+            padding : 5px;
+            width : 75px;
+            border : 1px solid black;
+            background : white;
+        }
+        .gallery img:hover{
+            -ms-transform : scale(2.2) rotate(10deg);
+            -webkit-transform : scale(2.2) rotate(10deg);
+            transform : scale(2.2) rotate(10deg);
+        }
+        .gallery img{
+            margin : 5px;
+            padding : 5px;
+            width : 75px;
+            border : 1px solid black;
+            -ms-transition : all 1s;
+            -webkit-transition : all 1s;
+            transition : all 1s;
+            background : white;
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery">
+        <img src="./images/11.png"/>
+        <img src="./images/22.png"/>
+        <img src="./images/33.png"/>
+        <img src="./images/44.png"/>
+        <img src="./images/55.png"/>
+    </div>
+</body>
+</html>

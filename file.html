@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传 文件</title>
+</head>
+<body>
+<form id="fileUpload" enctype="multipart/form-data">
+    <p><input id="file1" type="file" name="file1" ></p>
+    <input type="button" id="add" value="添加">
+    <input type="button" id="del" value="清空">
+    <input type="button" id="sub" value="上传">
+</form>
+
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        var uploadCount = 1;
+        var getFileSize = function(file){
+            var fileSize = 0;
+            if(!file.files){
+                var filePath = file.value;
+                var fileSystem = new ActiveXObject("Scripting.FileSystemObject");
+                if(!fileSystem.FileExists(filePath)){
+                    return 0;
+                }
+                var files = fileSystem.GetFile(filePath);
+                fileSize = files.Size;
+            }else{
+                fileSize = (file.files[0] && file.files[0].size) || 0;
+            }
+            return fileSize;
+        }
+        var fileType = function(form,types){
+            var elements = form.elements;
+            for( var i = 0; i < elements.length; i ++){
+                var ei = elements[i];
+                if(ei.type == "file"){
+                    var contentType = ei.value && ei.value.match(/^ (.*)(\.)(.{1,8})$/)[3];
+                    if(!ei.value || types.search(contentType) != -1){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        var clearFile = function(form){
+            var elements = form.elements;
+            for(var i = 0;i < elements.length; i ++){
+                var ei = elements[i];
+                (ei.type == "file") && ((isIE() && (ei.outerHTML = ei.outerHTML)) || (ei.value = ""));
+            }
+        }
+        var fileUpload = function(){
+            var fileUpload = document.getElementById("fileUpload");
+            var add = document.getElementById("add");
+            var del = document.getElementById("del");
+            var sub = document.getElementById("sub");
+            var file1 = document.getElementById("file1");
+            sub.onclick = function(){
+                alert("测试文件大小:"+getFileSize(file1));
+                if(!fileType(fileUpload,"text")){
+                    return;
+                }
+            }
+            del.onclick = function(){
+                clearFile(fileUpload);
+            }
+            add.onclick = function(){
+                uploadCount ++;
+                var input = document.createElement("input");
+                var p = document.createElement("p");
+                input.name = "file" + uploadCount;
+                input.type = "file";
+                p.appendChild(input);
+                fileUpload.insertBefore(p,document.getElementById("add"));
+            }
+        }
+        fileUpload();
+
+    }
+</script>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>浮动广告</title>
+    <style>
+        .coupleAds{
+            position : absolute;
+            width : 100px;
+            border : 1px #ccc solid;
+            height : 200px;
+            z-index : 2000;
+            background-color : #ccc;
+            white-space: pre-wrap;
+            display : none;
+        }
+        #coupleAdsLeft{
+            left : 5px;
+        }
+        #coupleAdsRight{
+            left : 100%;
+            margin-left : -107px;
+        }
+    </style>
+</head>
+<body>
+    <div class="coupleAds" id="coupleAdsLeft">浮动广告左边</div>
+    <div class="coupleAds" id="coupleAdsRight">浮动广告右边</div>
+    <input type="button" id="openAbs" value="显示">
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        document.getElementById("openAbs").onclick = function(){
+            var coupleAdsLeft = null;
+            var coupleAdsRight = null;
+            var coupleAds = function(absLeft,absRight){
+                coupleAdsLeft = absLeft;
+                coupleAdsRight = absRight;
+                this.coupleAdsLeft.style.display = "block";
+                this.coupleAdsRight.style.display = "block";
+                absTop();
+            }
+            var absTop = function(){
+                if(!this.coupleAdsLeft)return;
+                var top = ((document.body.scrollTop || document.documentElement.scrollTop) + window.screen.availHeight / 2 - this.coupleAdsLeft.offsetHeight) + "px";
+                this.coupleAdsLeft.style.top = top;
+                this.coupleAdsRight.style.top = top;
+            }
+            var scrollEvent = (function(){
+                absTop();
+            })();
+            coupleAds(document.getElementById("coupleAdsLeft"),document.getElementById("coupleAdsRight"));
+        }
+    }
+</script>

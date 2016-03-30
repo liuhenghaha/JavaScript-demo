@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>关键词过滤</title>
+</head>
+<body>
+    <textarea id="keyWord" >
+        我喜欢JavaScript,不适用外挂,很多美女.
+    </textarea>
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        var keyWord = document.getElementById("keyWord");
+        keyWord.onclick = function(){
+            var keyWordLibs = ["JavaScript","美女","外挂" ];
+            var keyWordLibsLen = keyWordLibs.length;
+            for(var i = 0; i<keyWordLibsLen; i++){
+                keyWord.value = keyWord.value.replace(keyWordLibs[i],"****");
+            }
+        }
+    };
+</script>

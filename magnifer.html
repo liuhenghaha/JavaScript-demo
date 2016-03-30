@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>放大镜</title>
+    <style>
+        .minImages{
+            width : 200px;
+            position : relative;
+        }
+        .focus{
+            display : none;
+            border : 2px #ccc outset;
+            position : absolute;
+            top : 80px;
+            z-index : 100;
+            filter : alpha(opacity = 50);
+            -moz-opacity: 0.5;
+            opacity : 0.5;
+            cursor: move;
+        }
+        #source{
+            width : 200px;
+            height : auto;
+        }
+        .magnifer{
+            width : 304px;
+            height : 222px;
+            position :absolute;
+            display: none;
+            top : 300px;
+            overflow: hidden;
+            margin: 0px auto 0px;
+        }
+        .maxImage{
+            width : 800px;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="source" data-maxImg="./images/11.png">
+        <img class="minImages" src="./images/11.png">
+        <div class="focus" id="focus"></div>
+    </div>
+    <div class="magnifer" id="magnifer">
+        <img class="maxImage" id="magniferImg" src="./images/11.png">
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    window.onload = function(){
+        var isMoveFocus = false;
+        var focusElement = null;
+        var magniferElement = null;
+        var magniferWidth = 800;
+        var focusZindex = 100;
+        var magniferScale = 0;
+        var magniferZindex = 101;
+        var magniferMages = null;
+        var focusArea = {
+            "width" : 50,
+            "height" : 50
+        }
+        var setCss = function(_this,options){
+            if(!_this || _this.nodeType === 3 || _this.nodeType === 8 || !_this.style){
+                return;
+            }
+            for(var cs in options){
+                _this.style[cs] = options[cs];
+            }
+            return _this;
+        }
+        var initMagniferMages = function(_e){
+            focusElement = setCss(document.getElementById("focus"),{
+                "z-index" : focusZindex,
+                "width" : focusArea.width,
+                "height" : focusArea.height
+            });
+            initMagniferPos(_e);
+            magniferScale = magniferWidth / _e.offsetWidth;
+            var _img = _e.getAttribute("data-maxImg");
+            document.getElementById("magniferImg").setAttribute("src",_img);
+        }
+        mouseMagnifer = function(_e){
+            this.initMagniferMages(_e);
+            this.magniferMages = _e;
+        }
+        var mousepos = {
+            "top" : 0,
+            "left" : 0
+        }
+        var getMousePoint = function(_e){
+            var body = document.body;
+            var left = 0;
+            var top = 0;
+            if(typeof window.pageYOffset != "undefined"){
+                left = window.pageXOffset;
+                top = window.pageYOffset;
+            }else if(typeof document.compatMode != "undefined" && document.compatMode != "BackCompat"){
+                left = document.documentElement.scrollLeft;
+                top = document.documentElement.scrollTop;
+            }else if(typeof body != "undefined"){
+                left = body.scrollLeft;
+                top = body.scrollTop;
+            }
+            left += _e.clientX;
+            top += _e.clientY;
+            mousepos.left = left;
+            mousepos.top = top;
+            console.log(mousepos);
+            return mousepos;
+        }
+        var pointCheck = function(_event,_e,options){
+            var pos = getMousePoint(_event);
+            var w = options && options.width || _e.offsetWidth;
+            var h = options && options.height || _e.offsetHeight;
+            var left = getAbsoluteLeft(_e);
+            var top = getAbsoluteTop(_e);
+            pos.left += options && options.left || 0;
+            if(pos.left < (left + w) && left < pos.left && pos.top > top && pos.top < (top + h)){
+                return true;
+            }
+            return false;
+        }
+        var bodyMagnifermousemove = function(event){
+            var _event = _event || window.event;
+            var e = magniferMages;
+            if(pointCheck(_event,e)){
+                isMoveFocus = true;
+                focusStatus();
+                if(!isMoveFocus){
+                    return;
+                }
+                focusPos(e,_event);
+                magniferPos(e,_event);
+            }else{
+                isMoveFocus = false;
+                focusStatus();
+            }
+        }
+        var focusPos = function(_e,_event){
+            var pos = getMousePoint(_event);
+            var top = pos.top - focusArea.height / 2;
+            var left = pos.left - focusArea.width / 2;
+            setCss(focusElement,{
+                "top" : top,
+                "left" : left
+            });
+        }
+        var focusStatus = function(){
+            isMoveFocus &&(setCss(focusElement,{
+                "display" : "block"
+            }) && setCss(magniferElement,{
+                "display" : "block"
+            }))|| (setCss(focusElement,{
+                "display" : "none"
+            }) && setCss(magniferElement,{
+                "display" : "none"
+            }));
+        }
+        var initMagniferPos = function(_e){
+            magniferElement = setCss(document.getElementById("magnifer"),{
+                "z-index" : magniferZindex,
+                "top" : getAbsoluteTop(_e),
+                "left" : getAbsoluteLeft(_e) + _e.offsetWidth + focusArea.width
+            });
+        }
+        var magniferPos = function(_e,_event){
+            var pos = getMousePoint(_event);
+            var top = magniferScale * (pos.top - getAbsoluteTop(_e) - focusArea.height / 2);
+            var left = magniferScale * (pos.left - getAbsoluteLeft(_e) - focusArea.width / 2);
+            if(top < 0 || left < 0){
+                return;
+            }
+            setCss(document.getElementById("magniferImg"),{
+                "top" : "-" + top,
+                "left" : "-" + left
+            })
+        }
+        var getAbsoluteTop = function(_e){
+            var top = _e.offsetTop;
+            var current = _e.offsetParent;
+            while(current != null){
+                top += current.offsetTop;
+                current = current.offsetParent;
+            }
+            return top;
+        }
+        var getAbsoluteLeft = function(_e){
+            var left = _e.offsetLeft;
+            var current = _e.offsetParent;
+            while(current != null){
+                left += current.offsetLeft;
+                current = current.offsetParent;
+            }
+            return left;
+        }
+        magniferMages = document.getElementById("source");
+        initMagniferMages(magniferMages);
+        document.body.onmousemove = function(e){
+            bodyMagnifermousemove(e);
+        }
+
+    }
+</script>
